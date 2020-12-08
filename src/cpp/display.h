@@ -5,6 +5,10 @@
 #include <obs.h>
 #include <graphics/graphics.h>
 
+#if _WIN32
+#include <windows.h>
+#endif
+
 class Display {
 
 public:
@@ -23,4 +27,16 @@ private:
     int y = 0;
     int width = 0;
     int height = 0;
+
+#if _WIN32
+    std::thread worker;
+    void SystemWorker();
+    HWND              m_ourWindow;
+    HWND              m_parentWindow;
+    static bool       DisplayWndClassRegistered;
+    static WNDCLASSEX DisplayWndClassObj;
+    static ATOM       DisplayWndClassAtom;
+    static void       DisplayWndClass();
+    static LRESULT CALLBACK DisplayWndProc(_In_ HWND hwnd, _In_ UINT uMsg, _In_ WPARAM wParam, _In_ LPARAM lParam);
+#endif
 };
