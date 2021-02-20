@@ -11,82 +11,13 @@ jobs:
   # Build with srt support: https://gist.github.com/Kusmeroglu/ef81c4f96369f890fcdc0616652430ad
   build-linux:
     runs-on: ubuntu-20.04
+    container:
+      image: registry.cn-beijing.aliyuncs.com/mengli/obs-node-linux-workflow-container:latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Build srt
-        shell: bash
-        run: |
-          sudo apt-get install libssl-dev git cmake
-          mkdir ~/ffmpeg_sources
-          cd ~/ffmpeg_sources
-          git clone --depth 1 https://github.com/Haivision/srt.git
-          mkdir srt/build
-          cd ~/ffmpeg_sources/srt/build && \
-          cmake -DENABLE_C_DEPS=ON -DENABLE_SHARED=ON -DENABLE_STATIC=OFF -fPIC .. && \
-          make && \
-          make install
-
-      - name: Install build dependencies
-        shell: bash
-        run: |
-          sudo apt-get update -qq && sudo apt-get -y install \
-            autoconf \
-            automake \
-            build-essential \
-            cmake \
-            git-core \
-            libass-dev \
-            libfreetype6-dev \
-            libgnutls28-dev \
-            libsdl2-dev \
-            libtool \
-            libva-dev \
-            libvdpau-dev \
-            libvorbis-dev \
-            libxcb1-dev \
-            libxcb-shm0-dev \
-            libxcb-xfixes0-dev \
-            pkg-config \
-            texinfo \
-            wget \
-            yasm \
-            zlib1g-dev \
-            libx264-dev \
-            libx265-dev \
-            libnuma-dev \
-            libfdk-aac-dev \
-            libmp3lame-dev
-
-      - name: Build ffmpeg
-        shell: bash
-        run: |
-          cd ~/ffmpeg_sources && \
-          wget -O ffmpeg-snapshot.tar.bz2 https://ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2 && \
-          tar xjvf ffmpeg-snapshot.tar.bz2
-          cd ~/ffmpeg_sources/ffmpeg && \
-          PATH="$HOME/bin:$PATH" PKG_CONFIG_PATH="$HOME/ffmpeg_build/lib/pkgconfig" ./configure --prefix=/usr \
-                      --enable-gpl         \
-                      --enable-version3    \
-                      --enable-nonfree     \
-                      --disable-static     \
-                      --enable-shared      \
-                      --disable-debug      \
-                      --enable-avresample  \
-                      --enable-libfdk-aac  \
-                      --enable-libfreetype \
-                      --enable-libx264     \
-                      --enable-libx265     \
-                      --enable-protocol=libsrt \
-                      --enable-libsrt && \
-          make && \
-          make install && \
-          hash -r
-          sudo checkinstall -y --deldoc=yes
-          sudo ldconfig
-
-      - name: Build obs-node
+      - name: Build
         shell: bash
         run: bash scripts/build.sh all
 

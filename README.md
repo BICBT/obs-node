@@ -37,6 +37,6 @@ to build from user machine. Currently windows(64bit), macos, linux (ubuntu20.04)
 Sometimes, there is a need to build/test linux prebuilds in the local machine (MacOS), a docker env is provided in the
 project. Run
 ```shell script
-bash docker/build-and-run.sh
+bash linux-dev/build-and-run.sh
 ```
 to run and attach the docker env. 
